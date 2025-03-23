@@ -39,7 +39,7 @@ export function Sidebar({ onNewChat }: SidebarProps) {
   return (
     <div
       className={`fixed h-full flex flex-col transition-all duration-300 ease-in-out w-[280px] ${
-        isExpanded ? "bg-[#11131d] border-r border-[#222639]" : "bg-transparent"
+        isExpanded ? "bg-[#11131d] border-r " : "bg-transparent"
       }`}
       onMouseEnter={() => setIsExpanded(true)}
       onMouseLeave={() => setIsExpanded(false)}
