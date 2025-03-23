@@ -6,6 +6,7 @@ import { Slot } from "@radix-ui/react-slot";
 import { type VariantProps, cva } from "class-variance-authority";
 import { PanelLeft } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Image from "next/image";
 
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
@@ -82,8 +83,12 @@ export function Sidebar({ onNewChat }: SidebarProps) {
             isExpanded ? "bg-[#99a3ff]/10" : ""
           }`}
         >
-          <LockClosedIcon
-            className={`w-5 h-5 transition-colors ${
+          <Image
+            src="/incognito.svg"
+            alt="Incognito"
+            width={30}
+            height={30}
+            className={`transition-colors ${
               isExpanded ? "text-[#99a3ff]" : "text-[#a4a9c3]"
             }`}
           />

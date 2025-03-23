@@ -36,6 +36,7 @@ import {
   setActiveChat,
 } from "@/lib/chat-storage";
 import { createPortal } from "react-dom";
+import Image from "next/image";
 
 interface AttestationReport {
   verifying_key: string;
@@ -473,8 +474,14 @@ export default function Home() {
           <>
             <div className="flex-1 flex flex-col items-center justify-center p-4 gap-6">
               <div className="flex flex-col items-center text-center max-w-md gap-2">
-                <div className="p-3 bg-[#99a3ff]/10 rounded-full mb-2">
-                  <LockIcon className="w-6 h-6 text-[#99a3ff]" />
+                <div className="p-6 rounded-full mb-2">
+                  <Image
+                    src="/incognito.svg"
+                    alt="Incognito"
+                    width={200}
+                    height={240}
+                    className="text-[#99a3ff]"
+                  />
                 </div>
                 <h2 className="text-2xl font-mono tracking-tight text-foreground">
                   PRIVATE AI ASSISTANT
