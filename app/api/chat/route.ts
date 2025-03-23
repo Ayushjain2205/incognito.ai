@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
-import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
+import { PDFLoader } from "langchain/document_loaders/fs/pdf";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
+import { Document } from "@langchain/core/documents";
 
 async function parseFileContent(file: any): Promise<string> {
   try {
@@ -31,6 +32,7 @@ async function parseFileContent(file: any): Promise<string> {
           chunkSize: 1000,
           chunkOverlap: 200,
         });
+        // @ts-ignore
         const splitDocs = await textSplitter.splitDocuments(docs);
 
         // Combine all chunks into a single text
