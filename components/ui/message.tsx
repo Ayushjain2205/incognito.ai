@@ -24,6 +24,22 @@ interface Task {
   result?: string;
 }
 
+interface MCPServer {
+  id: string;
+  name: string;
+  status: "connected" | "disconnected" | "connecting";
+  type: "standard_io" | "sse";
+  command?: string;
+  arguments?: string;
+  url?: string;
+  tools: {
+    id: string;
+    name: string;
+    status: "idle" | "running" | "completed";
+    lastUsed?: string;
+  }[];
+}
+
 interface MessageProps {
   role: "user" | "assistant";
   content: string;
@@ -37,6 +53,7 @@ interface MessageProps {
     content?: string;
   }>;
   onRegenerate?: () => void;
+  server?: MCPServer;
 }
 
 const getFileTypeIcon = (fileType: string) => {
@@ -99,6 +116,7 @@ export function Message({
   consolidatedResult,
   attachments,
   onRegenerate,
+  server,
 }: MessageProps) {
   const [expandedTaskId, setExpandedTaskId] = useState<string | null>(null);
   const completedTasks =
@@ -161,6 +179,30 @@ export function Message({
             >
               {content}
             </ReactMarkdown>
+
+            {server && (
+              <div className="mt-4 p-3 bg-[#1e2235] border border-[#222639] rounded-lg">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="flex items-center gap-2">
+                    <div
+                      className={`w-2 h-2 rounded-full ${
+                        server.status === "connected"
+                          ? "bg-[#4ade80]"
+                          : server.status === "connecting"
+                          ? "bg-[#99a3ff] animate-pulse"
+                          : "bg-[#a4a9c3]"
+                      }`}
+                    />
+                    <span className="text-sm text-white">{server.name}</span>
+                  </div>
+                  <span className="text-xs text-[#a4a9c3]">
+                    {server.type === "standard_io"
+                      ? `${server.command} ${server.arguments}`
+                      : server.url}
+                  </span>
+                </div>
+              </div>
+            )}
 
             {tasks && tasks.length > 0 && (
               <div className="mt-4 space-y-2">
