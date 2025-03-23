@@ -1,26 +1,158 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --font-sans: var(--font-ibm-plex);
+  --font-mono: var(--font-space-mono);
+  --font-code: var(--font-fira-code);
+  --font-input: var(--font-jetbrains);
+
+  --background: 240 10% 3.9%;
+  --foreground: 0 0% 98%;
+  
+  --bg-lighter: 240 15% 4.5%;
+  --bg-darker: 240 20% 2%;
+  --fg-muted: 240 5% 64.9%;
+  
+  --accent: 234 89% 74%;
+  --accent-hover: 235 89% 70%;
+  
+  --user-bg: 235 89% 70%;
+  --user-fg: 0 0% 100%;
+  --assistant-bg: 240 25% 8%;
+  --assistant-fg: 240 5% 84.9%;
+  --border-color: 240 24% 10%;
+
+  --radius: 0.5rem;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+@layer base {
+  body {
+    font-family: var(--font-sans);
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-mono);
+    letter-spacing: -0.025em;
+  }
+
+  .feature-title {
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .feature-description {
+    font-family: var(--font-sans);
+    line-height: 1.6;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+.message-container {
+  width: 100%;
+  max-width: 48rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.message {
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+  word-break: break-words;
+}
+
+.message-content {
+  white-space: pre-wrap;
+  font-family: var(--font-input) !important;
+}
+
+.user-message {
+  background-color: hsl(var(--user-bg));
+  color: hsl(var(--user-fg));
+  margin-left: 3rem;
+}
+
+.assistant-message {
+  background-color: hsl(var(--assistant-bg));
+  color: hsl(var(--assistant-fg));
+  margin-right: 3rem;
+  border: 1px solid hsl(var(--border-color) / 0.2);
+}
+
+.input-container {
+  position: relative;
+  width: 100%;
+  max-width: 48rem;
+  margin: 1rem auto 0;
+  background-color: hsl(var(--bg-lighter));
+  border-radius: 0.5rem;
+  border: 1px solid hsl(var(--border-color) / 0.4);
+  transition: all 300ms;
+}
+
+.input-container:focus-within {
+  border-color: hsl(var(--accent) / 0.7);
+  box-shadow: 0 0 20px hsl(var(--accent) / 0.15);
+}
+
+.message-input {
+  width: 100%;
+  background-color: transparent;
+  padding: 1rem;
+  padding-right: 4rem;
+  outline: none;
+  color: hsl(var(--foreground));
+  font-family: var(--font-input) !important;
+}
+
+.message-input::placeholder {
+  color: hsl(var(--fg-muted));
+}
+
+.send-button {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 0.625rem;
+  border-radius: 9999px;
+  background-color: hsl(var(--accent));
+  transition: background-color 200ms;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.send-button:hover:not(:disabled) {
+  background-color: hsl(var(--accent-hover));
+}
+
+.send-button:disabled {
+  opacity: 0.5;
+}
+
+.action-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  background-color: hsl(var(--bg-darker) / 0.5);
+  border-radius: 9999px;
+  padding: 0.25rem;
+  width: auto;
+}
+
+.app-title {
+  font-family: var(--font-mono) !important;
+  letter-spacing: -0.025em;
+}
+
+.signature-text {
+  font-family: var(--font-code) !important;
+  font-size: 0.75rem;
+  line-height: 1rem;
 }
