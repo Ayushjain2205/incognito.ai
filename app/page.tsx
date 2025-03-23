@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Header } from "@/components/ui/header";
 import { Sidebar } from "@/components/ui/sidebar";
@@ -96,7 +96,8 @@ const getFileTypeIcon = (fileType: string) => {
   return <File className="w-4 h-4" />;
 };
 
-export default function Home() {
+// Create a client component that uses useSearchParams
+function ChatContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -733,5 +734,14 @@ export default function Home() {
           document.body
         )}
     </div>
+  );
+}
+
+// Main page component
+export default function Home() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ChatContent />
+    </Suspense>
   );
 }
