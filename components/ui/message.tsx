@@ -148,7 +148,7 @@ export function Message({
         )}
 
         {role === "assistant" && (
-          <div className="flex justify-start">
+          <div className="flex justify-start mt-2">
             <MessageActions
               content={content}
               signature={signature}

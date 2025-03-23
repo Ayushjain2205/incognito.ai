@@ -1,23 +1,45 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { ShieldCheckIcon, CopyIcon, CheckIcon, RefreshCwIcon } from "lucide-react"
+import { useState } from "react";
+import {
+  ShieldCheckIcon,
+  CopyIcon,
+  CheckIcon,
+  RefreshCwIcon,
+} from "lucide-react";
 
 interface MessageActionsProps {
-  content: string
-  signature?: string
-  onRegenerate?: () => void
+  content: string;
+  signature?: string;
+  onRegenerate?: () => void;
 }
 
-export function MessageActions({ content, signature, onRegenerate }: MessageActionsProps) {
-  const [showSignature, setShowSignature] = useState(false)
-  const [copied, setCopied] = useState(false)
+export function MessageActions({
+  content,
+  signature,
+  onRegenerate,
+}: MessageActionsProps) {
+  const [showSignature, setShowSignature] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(content)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-  }
+    navigator.clipboard.writeText(content);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleSignatureToggle = () => {
+    setShowSignature(!showSignature);
+    // Add a small delay to ensure the signature is rendered before scrolling
+    setTimeout(() => {
+      if (!showSignature) {
+        window.scrollTo({
+          top: document.documentElement.scrollHeight,
+          behavior: "smooth",
+        });
+      }
+    }, 100);
+  };
 
   return (
     <div className="mt-2">
@@ -37,9 +59,11 @@ export function MessageActions({ content, signature, onRegenerate }: MessageActi
 
         {signature && (
           <button
-            onClick={() => setShowSignature(!showSignature)}
+            onClick={handleSignatureToggle}
             className={`p-1.5 rounded-full transition-colors ${
-              showSignature ? "bg-accent/20 text-accent" : "hover:bg-bg-lighter text-fg-muted"
+              showSignature
+                ? "bg-accent/20 text-accent"
+                : "hover:bg-bg-lighter text-fg-muted"
             }`}
             aria-label="Verify signature"
             title="Verify signature"
@@ -61,24 +85,19 @@ export function MessageActions({ content, signature, onRegenerate }: MessageActi
       </div>
 
       {showSignature && signature && (
-        <div
-          className="mt-2 p-3 bg-bg-darker rounded font-input text-xs text-fg-muted break-all border border-border-color/20"
-          style={{ fontFamily: "var(--font-jetbrains)" }}
-        >
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-accent font-mono tracking-tight">CRYPTOGRAPHIC SIGNATURE</span>
-            <button
-              onClick={() => setShowSignature(false)}
-              className="text-fg-muted hover:text-accent"
-              aria-label="Close"
-            >
-              ×
-            </button>
+        <div className="mt-2">
+          <div className="flex items-center gap-2 text-xs text-fg-muted mb-1">
+            <ShieldCheckIcon className="w-3.5 h-3.5 text-accent" />
+            <span className="font-mono tracking-tight">Signature</span>
           </div>
-          {signature}
+          <div
+            className="font-mono text-xs text-fg-muted/80 break-all bg-bg-darker/30 rounded px-2 py-1.5 border border-border-color/10"
+            style={{ fontFamily: "var(--font-jetbrains)" }}
+          >
+            {signature}
+          </div>
         </div>
       )}
     </div>
-  )
+  );
 }
-
