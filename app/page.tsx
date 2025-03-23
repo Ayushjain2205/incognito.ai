@@ -37,6 +37,8 @@ import {
 } from "@/lib/chat-storage";
 import { createPortal } from "react-dom";
 import Image from "next/image";
+import { AgentMode } from "@/components/ui/agent-mode";
+import { MCPMode } from "@/components/ui/mcp-mode";
 
 interface AttestationReport {
   verifying_key: string;
@@ -120,6 +122,7 @@ function ChatContent() {
   const [isLoadingAttestation, setIsLoadingAttestation] = useState(false);
   const [showAttestation, setShowAttestation] = useState(false);
   const [lastSignature, setLastSignature] = useState<string | null>(null);
+  const [mode, setMode] = useState<"chat" | "agent" | "mcp">("chat");
 
   // Load chat from URL or create new one
   useEffect(() => {
@@ -511,199 +514,208 @@ function ChatContent() {
 
   return (
     <div className="flex h-screen bg-[#161926]">
-      <Sidebar onNewChat={handleNewChat} />
+      <Sidebar onNewChat={handleNewChat} mode={mode} onModeChange={setMode} />
 
       <div className="flex-1 flex flex-col h-full">
-        {messages.length === 0 ? (
-          <>
-            <div className="flex-1 flex flex-col items-center justify-center p-4 gap-6">
-              <div className="flex flex-col items-center text-center max-w-md gap-2">
-                <div className="p-6 rounded-full mb-2">
-                  <Image
-                    src="/incognito.svg"
-                    alt="Incognito"
-                    width={200}
-                    height={240}
-                    className="text-[#99a3ff]"
-                  />
-                </div>
-                <h2 className="text-2xl font-mono tracking-tight text-foreground">
-                  PRIVATE AI ASSISTANT
-                </h2>
-                <p className="text-[#a4a9c3] font-sans">
-                  Your conversations are secure and private. Ask anything
-                  without compromising your data.
-                </p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-3xl">
-                {[
-                  {
-                    icon: <ShieldIcon className="w-5 h-5 text-[#99a3ff]" />,
-                    title: "END-TO-END ENCRYPTION",
-                    description:
-                      "Your messages are encrypted and cannot be accessed by third parties.",
-                  },
-                  {
-                    icon: <LockIcon className="w-5 h-5 text-[#99a3ff]" />,
-                    title: "ZERO DATA STORAGE",
-                    description:
-                      "We don't store your conversations or personal information.",
-                  },
-                  {
-                    icon: <ShieldIcon className="w-5 h-5 text-[#99a3ff]" />,
-                    title: "VERIFIED RESPONSES",
-                    description:
-                      "All AI responses are cryptographically signed for authenticity.",
-                  },
-                ].map((feature, i) => (
-                  <div
-                    key={i}
-                    className="bg-[#1e2235]/50 p-4 rounded-lg border border-[#222639] backdrop-blur-sm hover:border-[#99a3ff]/20 transition-colors"
-                  >
-                    <div className="flex items-center gap-2 mb-2">
-                      {feature.icon}
-                      <h3 className="font-mono text-sm">{feature.title}</h3>
-                    </div>
-                    <p className="text-sm text-[#a4a9c3] font-sans">
-                      {feature.description}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </>
-        ) : (
-          <>
-            <div className="p-4 flex items-center justify-between border-b border-[#222639] bg-[#11131d]/30 backdrop-blur-sm relative">
-              <div className="absolute inset-x-0 bottom-0 h-[1px] bg-gradient-to-r from-transparent via-[#99a3ff]/10 to-transparent" />
-              <div className="w-[68px]" />
-              <div className="flex items-center gap-2 title-menu-container">
-                {isRenaming ? (
-                  <form
-                    onSubmit={handleRenameSubmit}
-                    className="flex items-center gap-2"
-                  >
-                    <MessageCircle className="w-4 h-4 text-[#99a3ff]" />
-                    <input
-                      ref={titleInputRef}
-                      type="text"
-                      value={chatTitle}
-                      onChange={(e) => setChatTitle(e.target.value)}
-                      onBlur={() => setIsRenaming(false)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Escape") {
-                          setIsRenaming(false);
-                        }
-                      }}
-                      className="bg-transparent border-none outline-none font-mono text-sm text-center text-[#a4a9c3] w-64 focus:ring-0"
+        {mode === "chat" ? (
+          messages.length === 0 ? (
+            <>
+              <div className="flex-1 flex flex-col items-center justify-center p-4 gap-6">
+                <div className="flex flex-col items-center text-center max-w-md gap-2">
+                  <div className="p-6 rounded-full mb-2">
+                    <Image
+                      src="/incognito.svg"
+                      alt="Incognito"
+                      width={200}
+                      height={240}
+                      className="text-[#99a3ff]"
                     />
-                  </form>
-                ) : (
-                  <div className="relative group">
-                    <button
-                      ref={titleButtonRef}
-                      onClick={() => setShowTitleMenu(!showTitleMenu)}
-                      className="flex items-center gap-2 hover:text-white transition-colors group/title"
-                    >
-                      <MessageCircle className="w-4 h-4 text-[#99a3ff]" />
-                      <h2 className="font-mono text-sm text-center text-[#a4a9c3] group-hover/title:text-white">
-                        {chatTitle}
-                      </h2>
-                      <MoreVertical className="w-4 h-4 text-[#a4a9c3] opacity-0 group-hover/title:opacity-100 transition-opacity" />
-                    </button>
                   </div>
-                )}
-              </div>
-              <div className="flex justify-end min-w-[68px]">
-                <SecureConnectionPill />
-              </div>
-            </div>
-            <main className="flex-1 overflow-y-auto py-4 px-4">
-              <div className="max-w-3xl mx-auto space-y-4">
-                {messages.map((message, i) => (
-                  <Message
-                    key={i}
-                    role={message.role}
-                    content={message.content}
-                    signature={message.signature}
-                    attachments={message.attachments}
-                    onRegenerate={
-                      i === messages.length - 1 && message.role === "assistant"
-                        ? handleRegenerate
-                        : undefined
-                    }
-                  />
-                ))}
-                {isLoading && <LoadingIndicator />}
-                <div ref={messagesEndRef} />
-              </div>
-            </main>
-          </>
-        )}
+                  <h2 className="text-2xl font-mono tracking-tight text-foreground">
+                    PRIVATE AI ASSISTANT
+                  </h2>
+                  <p className="text-[#a4a9c3] font-sans">
+                    Your conversations are secure and private. Ask anything
+                    without compromising your data.
+                  </p>
+                </div>
 
-        <div className="relative p-4">
-          <div className="absolute left-1/2 -translate-x-1/2 bottom-6 w-full max-w-2xl mx-auto">
-            <div className="relative flex items-start bg-[#1e2235] border border-[#222639] rounded-lg shadow-lg mx-4">
-              {attachments.length > 0 && (
-                <div className="absolute -top-12 left-0 right-0 flex flex-wrap gap-2 p-2">
-                  {attachments.map((file, index) => (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-3xl">
+                  {[
+                    {
+                      icon: <ShieldIcon className="w-5 h-5 text-[#99a3ff]" />,
+                      title: "END-TO-END ENCRYPTION",
+                      description:
+                        "Your messages are encrypted and cannot be accessed by third parties.",
+                    },
+                    {
+                      icon: <LockIcon className="w-5 h-5 text-[#99a3ff]" />,
+                      title: "ZERO DATA STORAGE",
+                      description:
+                        "We don't store your conversations or personal information.",
+                    },
+                    {
+                      icon: <ShieldIcon className="w-5 h-5 text-[#99a3ff]" />,
+                      title: "VERIFIED RESPONSES",
+                      description:
+                        "All AI responses are cryptographically signed for authenticity.",
+                    },
+                  ].map((feature, i) => (
                     <div
-                      key={index}
-                      className="flex items-center gap-2 bg-[#282d45] px-3 py-1.5 rounded-md text-sm text-[#a4a9c3]"
+                      key={i}
+                      className="bg-[#1e2235]/50 p-4 rounded-lg border border-[#222639] backdrop-blur-sm hover:border-[#99a3ff]/20 transition-colors"
                     >
-                      {getFileTypeIcon(file.type)}
-                      <span className="truncate max-w-[200px]">
-                        {file.name}
-                      </span>
-                      <button
-                        onClick={() => removeAttachment(index)}
-                        className="text-[#a4a9c3] hover:text-white transition-colors"
-                      >
-                        ×
-                      </button>
+                      <div className="flex items-center gap-2 mb-2">
+                        {feature.icon}
+                        <h3 className="font-mono text-sm">{feature.title}</h3>
+                      </div>
+                      <p className="text-sm text-[#a4a9c3] font-sans">
+                        {feature.description}
+                      </p>
                     </div>
                   ))}
                 </div>
-              )}
-              <div className="flex-1 pr-28">
-                <ChatInput
-                  onSend={(msg) => {
-                    handleSendMessage(msg);
-                    setMessage("");
-                  }}
-                  isLoading={isLoading}
-                  message={message}
-                  setMessage={setMessage}
-                  isFirstMessage={messages.length === 0}
-                />
               </div>
-              <div className="absolute right-2 top-2 flex items-center gap-1">
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  onChange={handleFileAttach}
-                  className="hidden"
-                  multiple
-                />
-                <button
-                  className="p-2 text-[#a4a9c3] hover:text-white transition-colors"
-                  onClick={() => fileInputRef.current?.click()}
-                >
-                  <Paperclip className="w-5 h-5" />
-                </button>
-                <button
-                  type="submit"
-                  form="chat-form"
-                  disabled={!message?.trim() || isLoading}
-                  className="p-2 text-[#99a3ff] hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed bg-[#99a3ff]/10 hover:bg-[#99a3ff]/20 rounded-md"
-                >
-                  <SendIcon className="w-5 h-5" />
-                </button>
+            </>
+          ) : (
+            <>
+              <div className="p-4 flex items-center justify-between border-b border-[#222639] bg-[#11131d]/30 backdrop-blur-sm relative">
+                <div className="absolute inset-x-0 bottom-0 h-[1px] bg-gradient-to-r from-transparent via-[#99a3ff]/10 to-transparent" />
+                <div className="w-[68px]" />
+                <div className="flex items-center gap-2 title-menu-container">
+                  {isRenaming ? (
+                    <form
+                      onSubmit={handleRenameSubmit}
+                      className="flex items-center gap-2"
+                    >
+                      <MessageCircle className="w-4 h-4 text-[#99a3ff]" />
+                      <input
+                        ref={titleInputRef}
+                        type="text"
+                        value={chatTitle}
+                        onChange={(e) => setChatTitle(e.target.value)}
+                        onBlur={() => setIsRenaming(false)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Escape") {
+                            setIsRenaming(false);
+                          }
+                        }}
+                        className="bg-transparent border-none outline-none font-mono text-sm text-center text-[#a4a9c3] w-64 focus:ring-0"
+                      />
+                    </form>
+                  ) : (
+                    <div className="relative group">
+                      <button
+                        ref={titleButtonRef}
+                        onClick={() => setShowTitleMenu(!showTitleMenu)}
+                        className="flex items-center gap-2 hover:text-white transition-colors group/title"
+                      >
+                        <MessageCircle className="w-4 h-4 text-[#99a3ff]" />
+                        <h2 className="font-mono text-sm text-center text-[#a4a9c3] group-hover/title:text-white">
+                          {chatTitle}
+                        </h2>
+                        <MoreVertical className="w-4 h-4 text-[#a4a9c3] opacity-0 group-hover/title:opacity-100 transition-opacity" />
+                      </button>
+                    </div>
+                  )}
+                </div>
+                <div className="flex justify-end min-w-[68px]">
+                  <SecureConnectionPill />
+                </div>
+              </div>
+              <main className="flex-1 overflow-y-auto py-4 px-4">
+                <div className="max-w-3xl mx-auto space-y-4">
+                  {messages.map((message, i) => (
+                    <Message
+                      key={i}
+                      role={message.role}
+                      content={message.content}
+                      signature={message.signature}
+                      attachments={message.attachments}
+                      onRegenerate={
+                        i === messages.length - 1 &&
+                        message.role === "assistant"
+                          ? handleRegenerate
+                          : undefined
+                      }
+                    />
+                  ))}
+                  {isLoading && <LoadingIndicator />}
+                  <div ref={messagesEndRef} />
+                </div>
+              </main>
+            </>
+          )
+        ) : mode === "agent" ? (
+          <AgentMode />
+        ) : (
+          <MCPMode />
+        )}
+
+        {mode === "chat" && (
+          <div className="relative p-4">
+            <div className="absolute left-1/2 -translate-x-1/2 bottom-6 w-full max-w-2xl mx-auto">
+              <div className="relative flex items-start bg-[#1e2235] border border-[#222639] rounded-lg shadow-lg mx-4">
+                {attachments.length > 0 && (
+                  <div className="absolute -top-12 left-0 right-0 flex flex-wrap gap-2 p-2">
+                    {attachments.map((file, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center gap-2 bg-[#282d45] px-3 py-1.5 rounded-md text-sm text-[#a4a9c3]"
+                      >
+                        {getFileTypeIcon(file.type)}
+                        <span className="truncate max-w-[200px]">
+                          {file.name}
+                        </span>
+                        <button
+                          onClick={() => removeAttachment(index)}
+                          className="text-[#a4a9c3] hover:text-white transition-colors"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <div className="flex-1 pr-28">
+                  <ChatInput
+                    onSend={(msg) => {
+                      handleSendMessage(msg);
+                      setMessage("");
+                    }}
+                    isLoading={isLoading}
+                    message={message}
+                    setMessage={setMessage}
+                    isFirstMessage={messages.length === 0}
+                  />
+                </div>
+                <div className="absolute right-2 top-2 flex items-center gap-1">
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileAttach}
+                    className="hidden"
+                    multiple
+                  />
+                  <button
+                    className="p-2 text-[#a4a9c3] hover:text-white transition-colors"
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    <Paperclip className="w-5 h-5" />
+                  </button>
+                  <button
+                    type="submit"
+                    form="chat-form"
+                    disabled={!message?.trim() || isLoading}
+                    className="p-2 text-[#99a3ff] hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed bg-[#99a3ff]/10 hover:bg-[#99a3ff]/20 rounded-md"
+                  >
+                    <SendIcon className="w-5 h-5" />
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
 
       {showTitleMenu &&

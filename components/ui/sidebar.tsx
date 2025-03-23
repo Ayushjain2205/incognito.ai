@@ -22,15 +22,17 @@ import {
 } from "@/components/ui/tooltip";
 
 import { LockOpenIcon as LockClosedIcon } from "lucide-react";
-import { Plus } from "lucide-react";
+import { Plus, MessageCircle, Network, Brain } from "lucide-react";
 import { Chat } from "@/types/chat";
 import { getChatStorage, setActiveChat } from "@/lib/chat-storage";
 
 interface SidebarProps {
   onNewChat: () => void;
+  mode: "chat" | "agent" | "mcp";
+  onModeChange: (mode: "chat" | "agent" | "mcp") => void;
 }
 
-export function Sidebar({ onNewChat }: SidebarProps) {
+export function Sidebar({ onNewChat, mode, onModeChange }: SidebarProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [chats, setChats] = useState<Chat[]>([]);
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
@@ -101,6 +103,46 @@ export function Sidebar({ onNewChat }: SidebarProps) {
         >
           Incognito.ai
         </h1>
+      </div>
+
+      {/* Mode Selection */}
+      <div className="px-4 mb-2">
+        <div className="text-xs text-[#a4a9c3] font-mono mb-2">MODE</div>
+        <div className="flex flex-col gap-1">
+          <button
+            onClick={() => onModeChange("chat")}
+            className={`flex items-center gap-2 px-3 py-2 text-sm rounded-md transition-colors ${
+              mode === "chat"
+                ? "bg-[#1e2235] text-white"
+                : "text-[#a4a9c3] hover:text-white hover:bg-[#282d45]"
+            }`}
+          >
+            <MessageCircle className="w-4 h-4" />
+            <span>Chat Mode</span>
+          </button>
+          <button
+            onClick={() => onModeChange("agent")}
+            className={`flex items-center gap-2 px-3 py-2 text-sm rounded-md transition-colors ${
+              mode === "agent"
+                ? "bg-[#1e2235] text-white"
+                : "text-[#a4a9c3] hover:text-white hover:bg-[#282d45]"
+            }`}
+          >
+            <Brain className="w-4 h-4" />
+            <span>Agent Mode</span>
+          </button>
+          <button
+            onClick={() => onModeChange("mcp")}
+            className={`flex items-center gap-2 px-3 py-2 text-sm rounded-md transition-colors ${
+              mode === "mcp"
+                ? "bg-[#1e2235] text-white"
+                : "text-[#a4a9c3] hover:text-white hover:bg-[#282d45]"
+            }`}
+          >
+            <Network className="w-4 h-4" />
+            <span>MCP Mode</span>
+          </button>
+        </div>
       </div>
 
       {/* Content container with overflow handling */}
