@@ -28,12 +28,6 @@ export function ChatInput({
 
     const adjustHeight = () => {
       textarea.style.height = "inherit";
-
-      // Get the computed line height
-      const lineHeight = parseInt(window.getComputedStyle(textarea).lineHeight);
-      const singleLineHeight = lineHeight || 20; // fallback to 20px if lineHeight is not set
-
-      // Calculate content height
       const computed = window.getComputedStyle(textarea);
       const height =
         parseInt(computed.getPropertyValue("border-top-width"), 10) +
@@ -42,12 +36,11 @@ export function ChatInput({
         parseInt(computed.getPropertyValue("padding-bottom"), 10) +
         parseInt(computed.getPropertyValue("border-bottom-width"), 10);
 
-      // Only expand if content height is greater than single line height
-      if (height > singleLineHeight) {
-        // Set max height to 200px, after that enable scrolling
-        textarea.style.height = Math.min(height, 200) + "px";
+      // Only expand if content needs more space
+      if (textarea.value === "") {
+        textarea.style.height = "44px"; // Default single line height
       } else {
-        textarea.style.height = singleLineHeight + "px";
+        textarea.style.height = Math.min(height, 200) + "px";
       }
     };
 
@@ -63,7 +56,7 @@ export function ChatInput({
     setMessage("");
     // Reset height
     if (textareaRef.current) {
-      textareaRef.current.style.height = "inherit";
+      textareaRef.current.style.height = "44px";
     }
   };
 
@@ -84,7 +77,7 @@ export function ChatInput({
           isFirstMessage ? "Hello! How can I help you?" : "Ask anything..."
         }
         disabled={isLoading}
-        className="w-full bg-transparent text-[#a4a9c3] placeholder:text-[#a4a9c3]/50 resize-none py-3 px-4 focus:outline-none font-mono text-sm min-h-[44px] max-h-[200px] overflow-y-auto"
+        className="w-full bg-transparent text-[#a4a9c3] placeholder:text-[#a4a9c3]/50 resize-none py-3 px-4 focus:outline-none font-mono text-sm h-[44px] max-h-[200px] overflow-y-auto"
       />
     </form>
   );

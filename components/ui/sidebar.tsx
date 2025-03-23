@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/tooltip";
 
 import { LockOpenIcon as LockClosedIcon } from "lucide-react";
+import { Plus } from "lucide-react";
 
 interface SidebarProps {
   onNewChat: () => void;
@@ -37,60 +38,72 @@ export function Sidebar({ onNewChat }: SidebarProps) {
 
   return (
     <div
-      className={`h-full bg-[#161926] border-r border-[#222639] flex flex-col transition-all duration-300 ${
-        isExpanded ? "w-64" : "w-16"
+      className={`fixed h-full flex flex-col transition-all duration-300 ease-in-out w-[280px] ${
+        isExpanded ? "bg-[#11131d] border-r border-[#222639]" : "bg-transparent"
       }`}
       onMouseEnter={() => setIsExpanded(true)}
       onMouseLeave={() => setIsExpanded(false)}
     >
-      {/* Logo/Header */}
-      <div className="p-4 flex items-center gap-2">
-        <LockClosedIcon className="w-5 h-5 text-[#99a3ff] flex-shrink-0" />
-        <h1
-          className={`text-xl font-mono tracking-tighter text-foreground whitespace-nowrap overflow-hidden transition-opacity duration-300 ${
-            isExpanded ? "opacity-100" : "opacity-0 w-0"
+      {/* Logo/Header - Always visible */}
+      <div className="p-4 flex items-center gap-3">
+        <div
+          className={`p-2 rounded-lg transition-colors ${
+            isExpanded ? "bg-[#99a3ff]/10" : ""
           }`}
         >
-          incognito.ai
+          <LockClosedIcon
+            className={`w-5 h-5 transition-colors ${
+              isExpanded ? "text-[#99a3ff]" : "text-[#a4a9c3]"
+            }`}
+          />
+        </div>
+        <h1
+          className={`text-xl font-mono tracking-tight transition-colors ${
+            isExpanded ? "text-foreground" : "text-[#a4a9c3]"
+          }`}
+        >
+          Incognito.ai
         </h1>
       </div>
 
-      {/* New Chat Button */}
-      <button
-        onClick={onNewChat}
-        className={`mx-3 mt-1 p-2 border border-[#222639] rounded-md hover:bg-[#1e2235] hover:border-[#99a3ff]/20 transition-all flex items-center justify-center gap-2 text-sm font-mono ${
-          isExpanded ? "" : "p-2 mx-auto aspect-square"
-        }`}
-        title="New Secure Chat"
-      >
-        <span className={`${isExpanded ? "" : "sr-only"}`}>
-          + NEW SECURE CHAT
-        </span>
-        {!isExpanded && <span>+</span>}
-      </button>
-
-      {/* Chat History */}
+      {/* Content container with overflow handling */}
       <div
-        className={`flex-1 overflow-y-auto mt-4 ${isExpanded ? "" : "hidden"}`}
+        className={`flex-1 overflow-hidden transition-all duration-300 ease-in-out ${
+          isExpanded
+            ? "opacity-100 translate-x-0"
+            : "opacity-0 -translate-x-4 pointer-events-none"
+        }`}
       >
-        <div className="px-3 mb-2 text-xs text-[#a4a9c3] font-mono">
-          RECENT CHATS
+        {/* New Chat Button */}
+        <div className="p-2">
+          <button
+            onClick={onNewChat}
+            className="w-full flex items-center gap-2 px-3 py-2 text-sm text-[#a4a9c3] hover:text-white hover:bg-[#282d45] rounded-md transition-colors"
+          >
+            <Plus className="w-4 h-4" />
+            <span>New Chat</span>
+          </button>
         </div>
-        <ul className="space-y-1 px-2">
-          {mockChats.map((chat) => (
-            <li key={chat.id}>
-              <button
-                className={`w-full p-2 text-left rounded text-sm truncate transition-all hover:bg-[#1e2235] ${
-                  chat.active
-                    ? "bg-[#1e2235] text-white border border-[#99a3ff]/20"
-                    : "text-[#a4a9c3]"
-                }`}
-              >
-                {chat.title}
-              </button>
-            </li>
-          ))}
-        </ul>
+
+        {/* Chat History */}
+        <div className="mt-2 flex-1 overflow-y-auto">
+          <div className="px-3 mb-2 text-xs text-[#a4a9c3] font-mono">
+            RECENT CHATS
+          </div>
+          <ul className="space-y-1 px-2">
+            {mockChats.map((chat) => (
+              <li key={chat.id}>
+                <button
+                  className={`w-full p-2 text-left rounded text-sm truncate transition-all hover:bg-[#1e2235] ${
+                    chat.active ? "bg-[#1e2235] text-white" : "text-[#a4a9c3]"
+                  }`}
+                >
+                  {chat.title}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </div>
   );

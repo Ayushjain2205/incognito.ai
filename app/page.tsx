@@ -290,12 +290,11 @@ export default function Home() {
 
   return (
     <div className="flex h-screen bg-[#161926]">
-      {messages.length > 0 && <Sidebar onNewChat={handleNewChat} />}
+      <Sidebar onNewChat={handleNewChat} />
 
       <div className="flex-1 flex flex-col h-full">
         {messages.length === 0 ? (
           <>
-            <Header />
             <div className="flex-1 flex flex-col items-center justify-center p-4 gap-6">
               <div className="flex flex-col items-center text-center max-w-md gap-2">
                 <div className="p-3 bg-[#99a3ff]/10 rounded-full mb-2">
