@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Header } from "@/components/ui/header";
 import { Sidebar } from "@/components/ui/sidebar";
 import { Message } from "@/components/ui/message";
@@ -22,17 +23,16 @@ import {
   FileArchive,
   File,
 } from "lucide-react";
-
-interface ChatMessage {
-  role: "user" | "assistant";
-  content: string;
-  signature?: string;
-  attachments?: Array<{
-    name: string;
-    type: string;
-    size: number;
-  }>;
-}
+import { Chat, ChatMessage } from "@/types/chat";
+import {
+  getChatStorage,
+  saveChatStorage,
+  createNewChat,
+  updateChat,
+  deleteChat,
+  getChatById,
+  setActiveChat,
+} from "@/lib/chat-storage";
 
 const getFileTypeIcon = (fileType: string) => {
   // Document types
@@ -87,6 +87,8 @@ const getFileTypeIcon = (fileType: string) => {
 };
 
 export default function Home() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [chatTitle, setChatTitle] = useState<string>("New Chat");
@@ -99,6 +101,30 @@ export default function Home() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const titleInputRef = useRef<HTMLInputElement>(null);
+  const [currentChat, setCurrentChat] = useState<Chat | null>(null);
+
+  // Load chat from URL or create new one
+  useEffect(() => {
+    const chatId = searchParams.get("chat");
+    if (chatId) {
+      const chat = getChatById(chatId);
+      if (chat) {
+        setCurrentChat(chat);
+        setMessages(chat.messages);
+        setChatTitle(chat.title);
+        setActiveChat(chatId);
+      } else {
+        // If chat not found, redirect to home
+        router.push("/");
+      }
+    } else {
+      // No chat ID in URL, start fresh
+      setCurrentChat(null);
+      setMessages([]);
+      setChatTitle("New Chat");
+      setActiveChat(null);
+    }
+  }, [searchParams, router]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -148,11 +174,6 @@ export default function Home() {
     setAttachments([]); // Clear attachments after sending
     setIsLoading(true);
 
-    // If this is the first message, set it as the chat title
-    if (messages.length === 0) {
-      setChatTitle(generateTitleFromContent(message));
-    }
-
     try {
       const response = await fetch("/api/chat", {
         method: "POST",
@@ -178,6 +199,24 @@ export default function Home() {
         signature: data.signature,
       };
       setMessages((prev) => [...prev, assistantMessage]);
+
+      // If this is the first message, create a new chat after getting the response
+      if (!currentChat) {
+        const newTitle = generateTitleFromContent(message);
+        const newChat = createNewChat(newTitle);
+        newChat.messages = [userMessage, assistantMessage];
+        newChat.updatedAt = Date.now();
+        setCurrentChat(newChat);
+        setChatTitle(newTitle);
+        setActiveChat(newChat.id);
+        updateChat(newChat);
+        router.push(`/?chat=${newChat.id}`);
+      } else {
+        // Update existing chat in storage
+        currentChat.messages = [...messages, userMessage, assistantMessage];
+        currentChat.updatedAt = Date.now();
+        updateChat(currentChat);
+      }
     } catch (error) {
       console.error("Error:", error);
       setMessages((prev) => [
@@ -231,6 +270,13 @@ export default function Home() {
         signature: data.signature,
       };
       setMessages((prev) => [...prev, assistantMessage]);
+
+      // Update chat in storage
+      if (currentChat) {
+        currentChat.messages = [...newMessages, assistantMessage];
+        currentChat.updatedAt = Date.now();
+        updateChat(currentChat);
+      }
     } catch (error) {
       console.error("Error:", error);
       setMessages((prev) => [
@@ -258,11 +304,26 @@ export default function Home() {
   const handleRenameSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsRenaming(false);
+    if (currentChat) {
+      currentChat.title = chatTitle;
+      currentChat.updatedAt = Date.now();
+      updateChat(currentChat);
+    }
   };
 
   const handleNewChat = () => {
+    setCurrentChat(null);
     setMessages([]);
     setChatTitle("New Chat");
+    setActiveChat(null);
+    router.push("/");
+  };
+
+  const handleDeleteChat = () => {
+    if (currentChat) {
+      deleteChat(currentChat.id);
+      handleNewChat();
+    }
   };
 
   // Click outside handler for the title menu
@@ -394,7 +455,7 @@ export default function Home() {
                           Rename
                         </button>
                         <button
-                          onClick={handleNewChat}
+                          onClick={handleDeleteChat}
                           className="w-full px-3 py-1.5 text-left text-sm text-[#a4a9c3] hover:bg-[#282d45] transition-colors"
                         >
                           Delete

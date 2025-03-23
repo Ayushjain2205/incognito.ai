@@ -1,10 +1,11 @@
 "use client";
 
 import * as React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { type VariantProps, cva } from "class-variance-authority";
 import { PanelLeft } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
@@ -21,6 +22,8 @@ import {
 
 import { LockOpenIcon as LockClosedIcon } from "lucide-react";
 import { Plus } from "lucide-react";
+import { Chat } from "@/types/chat";
+import { getChatStorage, setActiveChat } from "@/lib/chat-storage";
 
 interface SidebarProps {
   onNewChat: () => void;
@@ -28,18 +31,34 @@ interface SidebarProps {
 
 export function Sidebar({ onNewChat }: SidebarProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [chats, setChats] = useState<Chat[]>([]);
+  const [activeChatId, setActiveChatId] = useState<string | null>(null);
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
-  // Mock chat history
-  const mockChats = [
-    { id: 1, title: "Private data encryption", active: true },
-    { id: 2, title: "Secure communication protocol" },
-    { id: 3, title: "Zero-knowledge proofs" },
-  ];
+  useEffect(() => {
+    const storage = getChatStorage();
+    setChats(storage.chats);
+    setActiveChatId(storage.activeChatId);
+  }, []);
+
+  useEffect(() => {
+    const chatId = searchParams.get("chat");
+    if (chatId) {
+      setActiveChatId(chatId);
+    }
+  }, [searchParams]);
+
+  const handleChatClick = (chatId: string) => {
+    setActiveChatId(chatId);
+    setActiveChat(chatId);
+    router.push(`/?chat=${chatId}`);
+  };
 
   return (
     <div
-      className={`fixed h-full flex flex-col transition-all duration-300 ease-in-out w-[280px] ${
-        isExpanded ? "bg-[#11131d] border-r " : "bg-transparent"
+      className={`fixed h-full flex flex-col transition-all duration-300 ease-in-out w-[280px] z-50 ${
+        isExpanded ? "bg-[#11131d]  " : "bg-transparent"
       }`}
       onMouseEnter={() => setIsExpanded(true)}
       onMouseLeave={() => setIsExpanded(false)}
@@ -91,11 +110,14 @@ export function Sidebar({ onNewChat }: SidebarProps) {
             RECENT CHATS
           </div>
           <ul className="space-y-1 px-2">
-            {mockChats.map((chat) => (
+            {chats.map((chat) => (
               <li key={chat.id}>
                 <button
+                  onClick={() => handleChatClick(chat.id)}
                   className={`w-full p-2 text-left rounded text-sm truncate transition-all hover:bg-[#1e2235] ${
-                    chat.active ? "bg-[#1e2235] text-white" : "text-[#a4a9c3]"
+                    chat.id === activeChatId
+                      ? "bg-[#1e2235] text-white"
+                      : "text-[#a4a9c3]"
                   }`}
                 >
                   {chat.title}
