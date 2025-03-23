@@ -37,15 +37,15 @@ export function Sidebar({ onNewChat }: SidebarProps) {
 
   return (
     <div
-      className={`h-full bg-[#050814] border-r border-border-color/20 flex flex-col transition-all duration-300 ${
+      className={`h-full bg-[#161926] border-r border-[#222639] flex flex-col transition-all duration-300 ${
         isExpanded ? "w-64" : "w-16"
       }`}
       onMouseEnter={() => setIsExpanded(true)}
       onMouseLeave={() => setIsExpanded(false)}
     >
       {/* Logo/Header */}
-      <div className="p-4 border-b border-border-color/20 flex items-center gap-2">
-        <LockClosedIcon className="w-5 h-5 text-accent flex-shrink-0" />
+      <div className="p-4 border-b border-[#222639] flex items-center gap-2 bg-[#11131d]/50 backdrop-blur-sm">
+        <LockClosedIcon className="w-5 h-5 text-[#99a3ff] flex-shrink-0" />
         <h1
           className={`text-xl font-mono tracking-tighter text-foreground whitespace-nowrap overflow-hidden transition-opacity duration-300 ${
             isExpanded ? "opacity-100" : "opacity-0 w-0"
@@ -58,7 +58,7 @@ export function Sidebar({ onNewChat }: SidebarProps) {
       {/* New Chat Button */}
       <button
         onClick={onNewChat}
-        className={`mx-3 mt-3 p-2 border border-border-color/30 rounded-md hover:bg-bg-lighter transition-colors flex items-center justify-center gap-2 text-sm font-mono ${
+        className={`mx-3 mt-3 p-2 border border-[#222639] rounded-md hover:bg-[#1e2235] hover:border-[#99a3ff]/20 transition-all flex items-center justify-center gap-2 text-sm font-mono ${
           isExpanded ? "" : "p-2 mx-auto aspect-square"
         }`}
         title="New Secure Chat"
@@ -73,15 +73,17 @@ export function Sidebar({ onNewChat }: SidebarProps) {
       <div
         className={`flex-1 overflow-y-auto mt-4 ${isExpanded ? "" : "hidden"}`}
       >
-        <div className="px-3 mb-2 text-xs text-fg-muted font-mono">
+        <div className="px-3 mb-2 text-xs text-[#a4a9c3] font-mono">
           RECENT CHATS
         </div>
         <ul className="space-y-1 px-2">
           {mockChats.map((chat) => (
             <li key={chat.id}>
               <button
-                className={`w-full p-2 text-left rounded text-sm truncate hover:bg-bg-lighter transition-colors ${
-                  chat.active ? "bg-bg-lighter text-white" : "text-fg-muted"
+                className={`w-full p-2 text-left rounded text-sm truncate transition-all hover:bg-[#1e2235] ${
+                  chat.active
+                    ? "bg-[#1e2235] text-white border border-[#99a3ff]/20"
+                    : "text-[#a4a9c3]"
                 }`}
               >
                 {chat.title}

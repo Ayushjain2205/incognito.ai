@@ -132,14 +132,14 @@ export default function Home() {
 
   // Secure connection pill component
   const SecureConnectionPill = () => (
-    <div className="flex items-center gap-1 bg-bg-darker/70 px-3 py-1 rounded-full text-xs text-fg-muted border border-border-color/20">
-      <span className="w-2 h-2 rounded-full bg-green-400"></span>
+    <div className="flex items-center gap-1 bg-[#11131d]/70 px-3 py-1 rounded-full text-xs text-[#a4a9c3] backdrop-blur-sm">
+      <span className="w-2 h-2 rounded-full bg-[#4ade80]/90"></span>
       <span className="font-mono">SECURE CONNECTION</span>
     </div>
   );
 
   return (
-    <div className="flex h-screen bg-[#050814]">
+    <div className="flex h-screen bg-[#161926]">
       {messages.length > 0 && <Sidebar onNewChat={handleNewChat} />}
 
       <div className="flex-1 flex flex-col h-full">
@@ -148,13 +148,13 @@ export default function Home() {
             <Header />
             <div className="flex-1 flex flex-col items-center justify-center p-4 gap-6">
               <div className="flex flex-col items-center text-center max-w-md gap-2">
-                <div className="p-3 bg-accent/10 rounded-full mb-2">
-                  <LockIcon className="w-6 h-6 text-accent" />
+                <div className="p-3 bg-[#99a3ff]/10 rounded-full mb-2">
+                  <LockIcon className="w-6 h-6 text-[#99a3ff]" />
                 </div>
                 <h2 className="text-2xl font-mono tracking-tight text-foreground">
                   PRIVATE AI ASSISTANT
                 </h2>
-                <p className="text-fg-muted font-sans">
+                <p className="text-[#a4a9c3] font-sans">
                   Your conversations are secure and private. Ask anything
                   without compromising your data.
                 </p>
@@ -163,19 +163,19 @@ export default function Home() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-3xl">
                 {[
                   {
-                    icon: <ShieldIcon className="w-5 h-5 text-accent" />,
+                    icon: <ShieldIcon className="w-5 h-5 text-[#99a3ff]" />,
                     title: "END-TO-END ENCRYPTION",
                     description:
                       "Your messages are encrypted and cannot be accessed by third parties.",
                   },
                   {
-                    icon: <LockIcon className="w-5 h-5 text-accent" />,
+                    icon: <LockIcon className="w-5 h-5 text-[#99a3ff]" />,
                     title: "ZERO DATA STORAGE",
                     description:
                       "We don't store your conversations or personal information.",
                   },
                   {
-                    icon: <ShieldIcon className="w-5 h-5 text-accent" />,
+                    icon: <ShieldIcon className="w-5 h-5 text-[#99a3ff]" />,
                     title: "VERIFIED RESPONSES",
                     description:
                       "All AI responses are cryptographically signed for authenticity.",
@@ -183,13 +183,13 @@ export default function Home() {
                 ].map((feature, i) => (
                   <div
                     key={i}
-                    className="bg-bg-lighter p-4 rounded-lg border border-border-color/20"
+                    className="bg-[#1e2235]/50 p-4 rounded-lg border border-[#222639] backdrop-blur-sm hover:border-[#99a3ff]/20 transition-colors"
                   >
                     <div className="flex items-center gap-2 mb-2">
                       {feature.icon}
                       <h3 className="font-mono text-sm">{feature.title}</h3>
                     </div>
-                    <p className="text-sm text-fg-muted font-sans">
+                    <p className="text-sm text-[#a4a9c3] font-sans">
                       {feature.description}
                     </p>
                   </div>
@@ -199,7 +199,7 @@ export default function Home() {
           </>
         ) : (
           <>
-            <div className="p-4 flex justify-end border-b border-border-color/10">
+            <div className="p-4 flex justify-end border-b border-[#222639] bg-[#11131d]/30 backdrop-blur-sm">
               <SecureConnectionPill />
             </div>
             <main className="flex-1 overflow-y-auto py-4 px-4">
@@ -224,7 +224,7 @@ export default function Home() {
           </>
         )}
 
-        <div className="p-4 border-t border-border-color/30 bg-bg-lighter">
+        <div className="p-4 border-t border-[#222639] bg-[#11131d]/30 backdrop-blur-sm">
           <ChatInput onSend={handleSendMessage} isLoading={isLoading} />
         </div>
       </div>
