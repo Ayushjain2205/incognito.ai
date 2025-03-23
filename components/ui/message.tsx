@@ -1,18 +1,87 @@
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { MessageActions } from "./message-actions";
+import {
+  Paperclip,
+  FileText,
+  FileCode,
+  FileImage,
+  FileSpreadsheet,
+  FileVideo,
+  FileAudio,
+  FileArchive,
+  File,
+} from "lucide-react";
 
 interface MessageProps {
   role: "user" | "assistant";
   content: string;
   signature?: string;
+  attachments?: Array<{
+    name: string;
+    type: string;
+    size: number;
+  }>;
   onRegenerate?: () => void;
 }
+
+const getFileTypeIcon = (fileType: string) => {
+  // Document types
+  if (
+    fileType.match(
+      /^(text|application\/(pdf|msword|vnd\.openxmlformats-officedocument\.wordprocessingml\.document))$/
+    )
+  ) {
+    return <FileText className="w-4 h-4" />;
+  }
+
+  // Code types
+  if (
+    fileType.match(
+      /^(text\/(javascript|python|java|c|c\+\+|php|ruby|go|rust|swift|typescript|html|css|json|xml|yaml|markdown))$/
+    )
+  ) {
+    return <FileCode className="w-4 h-4" />;
+  }
+
+  // Image types
+  if (fileType.match(/^image\/(jpeg|png|gif|webp|svg|bmp|tiff)$/)) {
+    return <FileImage className="w-4 h-4" />;
+  }
+
+  // Spreadsheet types
+  if (
+    fileType.match(
+      /^application\/(vnd\.ms-excel|vnd\.openxmlformats-officedocument\.spreadsheetml\.sheet)$/
+    )
+  ) {
+    return <FileSpreadsheet className="w-4 h-4" />;
+  }
+
+  // Video types
+  if (fileType.match(/^video\/(mp4|webm|ogg|mov|avi)$/)) {
+    return <FileVideo className="w-4 h-4" />;
+  }
+
+  // Audio types
+  if (fileType.match(/^audio\/(mp3|wav|ogg|m4a)$/)) {
+    return <FileAudio className="w-4 h-4" />;
+  }
+
+  // Archive types
+  if (fileType.match(/^application\/(zip|rar|7z|tar|gz)$/)) {
+    return <FileArchive className="w-4 h-4" />;
+  }
+
+  // Default file icon
+  return <File className="w-4 h-4" />;
+};
 
 export function Message({
   role,
   content,
   signature,
+  attachments,
   onRegenerate,
 }: MessageProps) {
   return (
@@ -26,6 +95,19 @@ export function Message({
           role === "user" ? "user-message" : "assistant-message"
         } relative`}
       >
+        {attachments && attachments.length > 0 && (
+          <div className="mb-2 flex flex-wrap gap-2">
+            {attachments.map((file, index) => (
+              <div
+                key={index}
+                className="flex items-center gap-2 bg-[#282d45] px-3 py-1.5 rounded-md text-sm text-[#a4a9c3]"
+              >
+                {getFileTypeIcon(file.type)}
+                <span className="truncate max-w-[200px]">{file.name}</span>
+              </div>
+            ))}
+          </div>
+        )}
         {role === "assistant" ? (
           <div className="markdown message-content font-input">
             <ReactMarkdown

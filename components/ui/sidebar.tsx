@@ -44,7 +44,7 @@ export function Sidebar({ onNewChat }: SidebarProps) {
       onMouseLeave={() => setIsExpanded(false)}
     >
       {/* Logo/Header */}
-      <div className="p-4 border-b border-[#222639] flex items-center gap-2 bg-[#11131d]/50 backdrop-blur-sm">
+      <div className="p-4 flex items-center gap-2">
         <LockClosedIcon className="w-5 h-5 text-[#99a3ff] flex-shrink-0" />
         <h1
           className={`text-xl font-mono tracking-tighter text-foreground whitespace-nowrap overflow-hidden transition-opacity duration-300 ${
@@ -58,7 +58,7 @@ export function Sidebar({ onNewChat }: SidebarProps) {
       {/* New Chat Button */}
       <button
         onClick={onNewChat}
-        className={`mx-3 mt-3 p-2 border border-[#222639] rounded-md hover:bg-[#1e2235] hover:border-[#99a3ff]/20 transition-all flex items-center justify-center gap-2 text-sm font-mono ${
+        className={`mx-3 mt-1 p-2 border border-[#222639] rounded-md hover:bg-[#1e2235] hover:border-[#99a3ff]/20 transition-all flex items-center justify-center gap-2 text-sm font-mono ${
           isExpanded ? "" : "p-2 mx-auto aspect-square"
         }`}
         title="New Secure Chat"
