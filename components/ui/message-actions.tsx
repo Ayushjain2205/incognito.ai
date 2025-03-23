@@ -90,10 +90,7 @@ export function MessageActions({
             <ShieldCheckIcon className="w-3.5 h-3.5 text-accent" />
             <span className="font-mono tracking-tight">Signature</span>
           </div>
-          <div
-            className="font-mono text-xs text-fg-muted/80 break-all bg-bg-darker/30 rounded px-2 py-1.5 border border-border-color/10"
-            style={{ fontFamily: "var(--font-jetbrains)" }}
-          >
+          <div className="font-mono text-xs bg-[#282d45] p-2 rounded truncate">
             {signature}
           </div>
         </div>

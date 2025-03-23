@@ -22,6 +22,8 @@ import {
   FileAudio,
   FileArchive,
   File,
+  CheckCircle2,
+  XCircle,
 } from "lucide-react";
 import { Chat, ChatMessage } from "@/types/chat";
 import {
@@ -34,6 +36,12 @@ import {
   setActiveChat,
 } from "@/lib/chat-storage";
 import { createPortal } from "react-dom";
+
+interface AttestationReport {
+  verifying_key: string;
+  cpu_attestation: string;
+  gpu_attestation: string;
+}
 
 const getFileTypeIcon = (fileType: string) => {
   // Document types
@@ -105,6 +113,11 @@ export default function Home() {
   const [currentChat, setCurrentChat] = useState<Chat | null>(null);
   const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
   const titleButtonRef = useRef<HTMLButtonElement>(null);
+  const [attestationReport, setAttestationReport] =
+    useState<AttestationReport | null>(null);
+  const [isLoadingAttestation, setIsLoadingAttestation] = useState(false);
+  const [showAttestation, setShowAttestation] = useState(false);
+  const [lastSignature, setLastSignature] = useState<string | null>(null);
 
   // Load chat from URL or create new one
   useEffect(() => {
@@ -128,6 +141,18 @@ export default function Home() {
       setActiveChat(null);
     }
   }, [searchParams, router]);
+
+  // Update lastSignature when messages change
+  useEffect(() => {
+    if (messages.length > 0) {
+      const lastAssistantMessage = [...messages]
+        .reverse()
+        .find((msg) => msg.role === "assistant");
+      if (lastAssistantMessage?.signature) {
+        setLastSignature(lastAssistantMessage.signature);
+      }
+    }
+  }, [messages]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -356,11 +381,86 @@ export default function Home() {
     };
   }, [showTitleMenu]);
 
+  const fetchAttestationReport = async () => {
+    setIsLoadingAttestation(true);
+    try {
+      const response = await fetch("/api/attestation");
+      if (!response.ok) {
+        throw new Error("Failed to fetch attestation");
+      }
+      const data = await response.json();
+      setAttestationReport(data);
+    } catch (error) {
+      console.error("Error fetching attestation:", error);
+    } finally {
+      setIsLoadingAttestation(false);
+    }
+  };
+
   // Secure connection pill component
   const SecureConnectionPill = () => (
-    <div className="flex items-center gap-1 bg-[#11131d]/70 px-3 py-1 rounded-full text-xs text-[#a4a9c3] backdrop-blur-sm">
-      <span className="w-2 h-2 rounded-full bg-[#4ade80]/90"></span>
-      <span className="font-mono">SECURE CONNECTION</span>
+    <div className="relative">
+      <button
+        onClick={() => {
+          setShowAttestation(!showAttestation);
+          if (!attestationReport) {
+            fetchAttestationReport();
+          }
+        }}
+        className="flex items-center gap-1 bg-[#11131d]/70 px-3 py-1 rounded-full text-xs text-[#a4a9c3] backdrop-blur-sm hover:bg-[#11131d] transition-colors"
+      >
+        <span className="w-2 h-2 rounded-full bg-[#4ade80]/90"></span>
+        <span className="font-mono">SECURE CONNECTION</span>
+      </button>
+
+      {showAttestation && (
+        <div className="absolute right-0 mt-2 w-80 bg-[#1e2235] border border-[#222639] rounded-lg shadow-lg p-4 z-[9999]">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-mono text-sm text-white">Attestation Report</h3>
+            <button
+              onClick={() => setShowAttestation(false)}
+              className="text-[#a4a9c3] hover:text-white transition-colors"
+            >
+              ×
+            </button>
+          </div>
+
+          {isLoadingAttestation ? (
+            <div className="text-sm text-[#a4a9c3]">Loading attestation...</div>
+          ) : attestationReport ? (
+            <div className="space-y-3">
+              <div>
+                <div className="text-xs text-[#a4a9c3] mb-1">Verifying Key</div>
+                <div className="font-mono text-xs bg-[#282d45] p-2 rounded truncate">
+                  {attestationReport.verifying_key}
+                </div>
+              </div>
+
+              <div>
+                <div className="text-xs text-[#a4a9c3] mb-1">
+                  CPU Attestation
+                </div>
+                <div className="font-mono text-xs bg-[#282d45] p-2 rounded truncate">
+                  {attestationReport.cpu_attestation}
+                </div>
+              </div>
+
+              <div>
+                <div className="text-xs text-[#a4a9c3] mb-1">
+                  GPU Attestation
+                </div>
+                <div className="font-mono text-xs bg-[#282d45] p-2 rounded truncate">
+                  {attestationReport.gpu_attestation}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="text-sm text-[#a4a9c3]">
+              Failed to load attestation
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 
