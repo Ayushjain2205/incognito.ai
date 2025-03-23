@@ -22,6 +22,8 @@ export function getChatStorage(): ChatStorage {
 export function saveChatStorage(storage: ChatStorage) {
   if (typeof window === "undefined") return;
   localStorage.setItem(STORAGE_KEY, JSON.stringify(storage));
+  // Trigger storage event
+  window.dispatchEvent(new Event("storage"));
 }
 
 export function createNewChat(title: string = "New Chat"): Chat {

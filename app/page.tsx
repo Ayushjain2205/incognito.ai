@@ -33,6 +33,7 @@ import {
   getChatById,
   setActiveChat,
 } from "@/lib/chat-storage";
+import { createPortal } from "react-dom";
 
 const getFileTypeIcon = (fileType: string) => {
   // Document types
@@ -102,6 +103,8 @@ export default function Home() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const titleInputRef = useRef<HTMLInputElement>(null);
   const [currentChat, setCurrentChat] = useState<Chat | null>(null);
+  const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
+  const titleButtonRef = useRef<HTMLButtonElement>(null);
 
   // Load chat from URL or create new one
   useEffect(() => {
@@ -321,24 +324,36 @@ export default function Home() {
 
   const handleDeleteChat = () => {
     if (currentChat) {
+      setShowTitleMenu(false); // Close menu immediately
       deleteChat(currentChat.id);
-      handleNewChat();
+      setActiveChat(null); // Clear active chat
+      setCurrentChat(null); // Clear current chat
+      setMessages([]); // Clear messages
+      setChatTitle("New Chat"); // Reset title
+      router.push("/"); // Navigate to home
     }
   };
 
-  // Click outside handler for the title menu
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        showTitleMenu &&
-        !(event.target as Element).closest(".title-menu-container")
-      ) {
-        setShowTitleMenu(false);
-      }
-    };
+  const updateMenuPosition = () => {
+    if (titleButtonRef.current) {
+      const rect = titleButtonRef.current.getBoundingClientRect();
+      setMenuPosition({
+        top: rect.bottom + window.scrollY + 4,
+        left: rect.left + rect.width / 2,
+      });
+    }
+  };
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+  useEffect(() => {
+    if (showTitleMenu) {
+      updateMenuPosition();
+      window.addEventListener("scroll", updateMenuPosition);
+      window.addEventListener("resize", updateMenuPosition);
+    }
+    return () => {
+      window.removeEventListener("scroll", updateMenuPosition);
+      window.removeEventListener("resize", updateMenuPosition);
+    };
   }, [showTitleMenu]);
 
   // Secure connection pill component
@@ -436,6 +451,7 @@ export default function Home() {
                 ) : (
                   <div className="relative group">
                     <button
+                      ref={titleButtonRef}
                       onClick={() => setShowTitleMenu(!showTitleMenu)}
                       className="flex items-center gap-2 hover:text-white transition-colors group/title"
                     >
@@ -445,23 +461,6 @@ export default function Home() {
                       </h2>
                       <MoreVertical className="w-4 h-4 text-[#a4a9c3] opacity-0 group-hover/title:opacity-100 transition-opacity" />
                     </button>
-
-                    {showTitleMenu && (
-                      <div className="absolute top-full mt-1 left-1/2 -translate-x-1/2 bg-[#1e2235] border border-[#222639] rounded-md shadow-lg py-1 min-w-[120px] z-50 backdrop-blur-none">
-                        <button
-                          onClick={handleRename}
-                          className="w-full px-3 py-1.5 text-left text-sm text-[#a4a9c3] hover:bg-[#282d45] transition-colors"
-                        >
-                          Rename
-                        </button>
-                        <button
-                          onClick={handleDeleteChat}
-                          className="w-full px-3 py-1.5 text-left text-sm text-[#a4a9c3] hover:bg-[#282d45] transition-colors"
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    )}
                   </div>
                 )}
               </div>
@@ -555,6 +554,34 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      {showTitleMenu &&
+        createPortal(
+          <div
+            className="fixed z-[9999]"
+            style={{
+              top: menuPosition.top,
+              left: menuPosition.left,
+              transform: "translateX(-50%)",
+            }}
+          >
+            <div className="bg-[#1e2235] border border-[#222639] rounded-md shadow-lg py-1 min-w-[120px] backdrop-blur-none">
+              <button
+                onClick={handleRename}
+                className="w-full px-3 py-1.5 text-left text-sm text-[#a4a9c3] hover:bg-[#282d45] transition-colors"
+              >
+                Rename
+              </button>
+              <button
+                onClick={handleDeleteChat}
+                className="w-full px-3 py-1.5 text-left text-sm text-[#a4a9c3] hover:bg-[#282d45] transition-colors"
+              >
+                Delete
+              </button>
+            </div>
+          </div>,
+          document.body
+        )}
     </div>
   );
 }

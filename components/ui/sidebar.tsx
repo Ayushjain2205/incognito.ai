@@ -49,6 +49,18 @@ export function Sidebar({ onNewChat }: SidebarProps) {
     }
   }, [searchParams]);
 
+  // Add storage change listener
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const storage = getChatStorage();
+      setChats(storage.chats);
+      setActiveChatId(storage.activeChatId);
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, []);
+
   const handleChatClick = (chatId: string) => {
     setActiveChatId(chatId);
     setActiveChat(chatId);
