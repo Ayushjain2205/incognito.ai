@@ -21,6 +21,7 @@ interface MessageProps {
     name: string;
     type: string;
     size: number;
+    content?: string;
   }>;
   onRegenerate?: () => void;
 }

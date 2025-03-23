@@ -106,7 +106,7 @@ export default function Home() {
   const [showTitleMenu, setShowTitleMenu] = useState(false);
   const [message, setMessage] = useState("");
   const [attachments, setAttachments] = useState<
-    Array<{ name: string; type: string; size: number }>
+    Array<{ name: string; type: string; size: number; content: string }>
   >([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -170,15 +170,58 @@ export default function Home() {
     return title.length === 40 ? `${title}...` : title;
   };
 
-  const handleFileAttach = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileAttach = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;
 
-    const newAttachments = Array.from(files).map((file) => ({
-      name: file.name,
-      type: file.type,
-      size: file.size,
-    }));
+    const newAttachments = await Promise.all(
+      Array.from(files).map(async (file) => {
+        try {
+          let content = "";
+
+          // Read file content based on type
+          if (file.type.startsWith("text/")) {
+            content = await file.text();
+          } else if (file.type === "application/json") {
+            content = await file.text();
+          } else if (file.type.startsWith("image/")) {
+            // For images, we'll just store the name and type
+            content = "";
+          } else if (file.type === "application/pdf") {
+            // For PDFs, we'll send the file directly to the server
+            const arrayBuffer = await file.arrayBuffer();
+            // Convert ArrayBuffer to Uint8Array
+            const uint8Array = new Uint8Array(arrayBuffer);
+            // Convert to base64 using a more reliable method
+            const chunks = [];
+            for (let i = 0; i < uint8Array.length; i += 8192) {
+              chunks.push(
+                String.fromCharCode.apply(
+                  null,
+                  Array.from(uint8Array.slice(i, i + 8192))
+                )
+              );
+            }
+            content = btoa(chunks.join(""));
+          }
+
+          return {
+            name: file.name,
+            type: file.type,
+            size: file.size,
+            content: content,
+          };
+        } catch (error) {
+          console.error("Error reading file:", error);
+          return {
+            name: file.name,
+            type: file.type,
+            size: file.size,
+            content: "",
+          };
+        }
+      })
+    );
 
     // Append new attachments to existing ones
     setAttachments((prev) => [...prev, ...newAttachments]);
