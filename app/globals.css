@@ -3,21 +3,25 @@
 @tailwind utilities;
 
 :root {
-  --font-sans: var(--font-ibm-plex);
-  --font-mono: var(--font-space-mono);
-  --font-code: var(--font-fira-code);
-  --font-input: var(--font-jetbrains);
+  --font-sans: var(--font-ibm-plex), system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: var(--font-space-mono), ui-monospace, SFMono-Regular, Menlo,
+    Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --font-code: var(--font-fira-code), ui-monospace, SFMono-Regular, Menlo,
+    Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --font-input: var(--font-jetbrains), ui-monospace, SFMono-Regular, Menlo,
+    Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 
   --background: 240 10% 3.9%;
   --foreground: 0 0% 98%;
-  
+
   --bg-lighter: 240 15% 4.5%;
   --bg-darker: 240 20% 2%;
   --fg-muted: 240 5% 64.9%;
-  
+
   --accent: 234 89% 74%;
   --accent-hover: 235 89% 70%;
-  
+
   --user-bg: 235 89% 70%;
   --user-fg: 0 0% 100%;
   --assistant-bg: 240 25% 8%;
@@ -33,9 +37,16 @@
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
     font-feature-settings: "rlig" 1, "calt" 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: var(--font-mono);
     letter-spacing: -0.025em;
   }
@@ -68,7 +79,6 @@
 
 .message-content {
   white-space: pre-wrap;
-  font-family: var(--font-input) !important;
 }
 
 .user-message {
@@ -107,7 +117,7 @@
   padding-right: 4rem;
   outline: none;
   color: hsl(var(--foreground));
-  font-family: var(--font-input) !important;
+  font-family: var(--font-input);
 }
 
 .message-input::placeholder {
@@ -147,12 +157,12 @@
 }
 
 .app-title {
-  font-family: var(--font-mono) !important;
+  font-family: var(--font-mono);
   letter-spacing: -0.025em;
 }
 
 .signature-text {
-  font-family: var(--font-code) !important;
+  font-family: var(--font-code);
   font-size: 0.75rem;
   line-height: 1rem;
 }

@@ -1,7 +1,12 @@
-import type React from "react"
-import type { Metadata } from "next"
-import { Space_Mono, Fira_Code, JetBrains_Mono, IBM_Plex_Sans } from "next/font/google"
-import "./globals.css"
+import type React from "react";
+import type { Metadata } from "next";
+import {
+  Space_Mono,
+  Fira_Code,
+  JetBrains_Mono,
+  IBM_Plex_Sans,
+} from "next/font/google";
+import "./globals.css";
 
 // A technical sans-serif font for body text
 const ibmPlexSans = IBM_Plex_Sans({
@@ -9,7 +14,8 @@ const ibmPlexSans = IBM_Plex_Sans({
   weight: ["400", "500", "600", "700"],
   variable: "--font-ibm-plex",
   display: "swap",
-})
+  preload: true,
+});
 
 // A monospace font for code-like elements and headers
 const spaceMono = Space_Mono({
@@ -17,38 +23,42 @@ const spaceMono = Space_Mono({
   subsets: ["latin"],
   variable: "--font-space-mono",
   display: "swap",
-})
+  preload: true,
+});
 
 // A technical monospace font for signatures and verification
 const firaCode = Fira_Code({
   subsets: ["latin"],
   variable: "--font-fira-code",
   display: "swap",
-})
+  preload: true,
+});
 
 // A clean monospace font for input and interactive elements
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
   variable: "--font-jetbrains",
   display: "swap",
-})
+  preload: true,
+});
 
 export const metadata: Metadata = {
   title: "incognito.ai - Private AI Assistant",
-  description: "Chat with AI securely and privately without compromising your data",
-}
+  description:
+    "Chat with AI securely and privately without compromising your data",
+};
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode
+  children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${ibmPlexSans.variable} ${spaceMono.variable} ${firaCode.variable} ${jetbrainsMono.variable}`}>
-        {children}
-      </body>
+    <html
+      lang="en"
+      className={`${ibmPlexSans.variable} ${spaceMono.variable} ${firaCode.variable} ${jetbrainsMono.variable}`}
+    >
+      <body>{children}</body>
     </html>
-  )
+  );
 }
-
