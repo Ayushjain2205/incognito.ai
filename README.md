@@ -1,36 +1,64 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🚀 Incognito.AI
 
-## Getting Started
+### **Privacy-First AI Platform with TEE-Powered Security**
 
-First, run the development server:
+### 🔥 **Introduction**
+
+In today’s AI-driven world, privacy is a growing concern. As AI models increasingly handle sensitive personal and business data, the risk of data exposure, misuse, and unauthorized access rises. Traditional AI platforms often store raw user data, making them vulnerable to breaches.
+
+**Incognito.AI** solves this by offering a **privacy-first, multi-mode AI platform** powered by **TEE-based encryption and inference**. It ensures that all AI interactions, workflows, and external connections remain fully private—even from the platform itself. With **cryptographic attestations**, every AI action is verifiable by the TEE's signature, and the hardware is authenticated via **CPU and GPU attestations**, ensuring trust and security.
+
+---
+
+### 🔒 **Key Features**
+
+✅ **TEE-Powered Privacy:** All data processing happens in **Trusted Execution Environments (TEEs)**, ensuring complete confidentiality and verifiability.  
+✅ **Cryptographic Attestations:** Every AI action is verified by the **TEE’s cryptographic signature**, and the hardware is validated through **CPU and GPU attestations**.  
+✅ **Multi-Mode AI Capabilities:**
+
+- 💬 **Chat Mode:** Secure, encrypted LLM conversations for private communication.
+- ⚙️ **Agentic Mode:** Autonomous background agents handling complex, multi-step tasks securely.
+- 🔗 **MCP Mode:** Private, context-aware external actions via **Model Context Protocol (MCP)**, enabling interactions with external systems without exposing raw data.
+
+---
+
+### ⚙️ **How It Works**
+
+Incognito.AI is built using:
+
+- 🛠️ **Next.js** for a fast, scalable, and responsive UI.
+- 🔐 **Nillion SecretLLM** and **SecretVault** for privacy-preserving inference and secure data storage.
+- 🤖 **LangChain** for orchestrating multi-step agentic workflows.
+- 🔗 **OpenMCP** for seamless external integrations using MCP-powered private LLM actions.
+
+---
+
+### 🚀 **Why It Matters**
+
+- **Full Data Privacy:** All AI interactions remain private, even from the platform itself.
+- **Verifiable Execution:** Users can trust the authenticity of every AI action, thanks to cryptographic attestations.
+- **Secure Automation:** Background agents run autonomously without compromising data security.
+- **Confidential External Actions:** MCP-powered integrations allow private execution of external operations without exposing sensitive data.
+
+---
+
+### 🔥 **Get Started**
+
+1. Clone the repository:
+
+```bash
+git clone <repo-url>
+cd incognito-ai
+```
+
+2. Install dependencies:
+
+```bash
+npm install
+```
+
+3. Start the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
