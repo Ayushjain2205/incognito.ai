@@ -89,9 +89,10 @@ export function Sidebar({ onNewChat }: SidebarProps) {
           />
         </div>
         <h1
-          className={`text-xl font-mono tracking-tight transition-colors ${
+          className={`text-xl font-mono tracking-tight transition-colors cursor-pointer ${
             isExpanded ? "text-foreground" : "text-[#a4a9c3]"
           }`}
+          onClick={onNewChat}
         >
           Incognito.ai
         </h1>
